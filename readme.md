@@ -12,3 +12,6 @@ import入生成的两个grpc代码，定义一个类Service，在里面重写方
 
 # 客户端
 定义一个run函数，负责连接服务器，然后调用trailer_pb2_grpc.TrailerStub类，即可以调用服务器中对应的重写方法，进行数据的传入与结果的传出。
+
+# models
+存储yolov8训练好的模型
