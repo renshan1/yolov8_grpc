@@ -31,12 +31,25 @@ class Servicer(trailer_pb2_grpc.TrailerServicer):
         image_base64 = request.args.decode()
         decoded_image = np.frombuffer(base64.b64decode(image_base64), np.uint8)
         decoded_image = cv2.imdecode(decoded_image, cv2.IMREAD_COLOR)
-        print(decoded_image.shape)
         results = self.model(decoded_image)
         for result in results:
             im_array = result.plot()
             base64_string = base64.b64encode(cv2.imencode(".jpg", im_array)[1])
         return trailer_pb2.ServiceResponse(code = 2 ,data = base64_string )
+    
+    def OnStream(self, request_iterator, context):
+        for frame in request_iterator:
+            # 处理接收到的视频帧
+            image_base64 = frame.data.decode()
+            decoded_image = np.frombuffer(base64.b64decode(image_base64), np.uint8)
+            decoded_image = cv2.imdecode(decoded_image, cv2.IMREAD_COLOR)
+            results = self.model(decoded_image)
+            for result in results:
+                im_array = result.plot()
+                base64_string = base64.b64encode(cv2.imencode(".jpg", im_array)[1])
+            # 发送处理后的帧给客户端
+            yield trailer_pb2.StreamResponse(data = base64_string)
+
 
     def Query(self, request, context):        
         return trailer_pb2.DataRowsResponse(row = [{}] )

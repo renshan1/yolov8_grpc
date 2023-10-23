@@ -5,7 +5,7 @@
 在.proto文件中，service类下写rpc方法。rpc方法有输入输出，在service类后可以定义输入输出的数据结构。
 # 生成grpc代码
 ```sh
-python -m grpc_tools.protocs -I./protos --python_out=. --grpc_python_out=. ./
+python -m grpc_tools.protoc -I./protos --python_out=. --grpc_python_out=. ./protos/trailer.proto
 ```
 # 服务端
 import入生成的两个grpc代码，定义一个类Service，在里面重写方法（函数）。方法serve：启动一个 gRPC 服务器的代码。

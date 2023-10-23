@@ -34,6 +34,11 @@ class TrailerStub(object):
                 request_serializer=trailer__pb2.ServiceRequest.SerializeToString,
                 response_deserializer=trailer__pb2.ServiceResponse.FromString,
                 )
+        self.OnStream = channel.stream_stream(
+                '/trailer.Trailer/OnStream',
+                request_serializer=trailer__pb2.StreamRequest.SerializeToString,
+                response_deserializer=trailer__pb2.StreamResponse.FromString,
+                )
         self.Query = channel.unary_unary(
                 '/trailer.Trailer/Query',
                 request_serializer=trailer__pb2.DataRowsRequest.SerializeToString,
@@ -82,6 +87,13 @@ class TrailerServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def OnStream(self, request_iterator, context):
+        """流数据
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def Query(self, request, context):
         """数据查询
         """
@@ -125,6 +137,11 @@ def add_TrailerServicer_to_server(servicer, server):
                     servicer.Service,
                     request_deserializer=trailer__pb2.ServiceRequest.FromString,
                     response_serializer=trailer__pb2.ServiceResponse.SerializeToString,
+            ),
+            'OnStream': grpc.stream_stream_rpc_method_handler(
+                    servicer.OnStream,
+                    request_deserializer=trailer__pb2.StreamRequest.FromString,
+                    response_serializer=trailer__pb2.StreamResponse.SerializeToString,
             ),
             'Query': grpc.unary_unary_rpc_method_handler(
                     servicer.Query,
@@ -216,6 +233,23 @@ class Trailer(object):
         return grpc.experimental.unary_unary(request, target, '/trailer.Trailer/Service',
             trailer__pb2.ServiceRequest.SerializeToString,
             trailer__pb2.ServiceResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def OnStream(request_iterator,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.stream_stream(request_iterator, target, '/trailer.Trailer/OnStream',
+            trailer__pb2.StreamRequest.SerializeToString,
+            trailer__pb2.StreamResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
